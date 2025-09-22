@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЭМ-Анализатор Pro</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f0a 0%, #051405 100%);
+            color: #e0ffe0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 850px;
+            width: 100%;
+            margin: 20px auto;
+            background: rgba(10, 30, 10, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
+            border: 1px solid #00cc66;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 100, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff88;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.7);
+            margin-bottom: 30px;
+            font-size: 2.7rem;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #00ff88, transparent);
+            border-radius: 3px;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        input {
+            padding: 14px 20px;
+            border: 1px solid #00cc66;
+            border-radius: 8px;
+            background: rgba(5, 20, 5, 0.8);
+            color: #e0ffe0;
+            font-size: 16px;
+            width: 280px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 100, 0.2);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        select {
+            padding: 14px 20px;
+            border: 1px solid #00cc66;
+            border-radius: 8px;
+            background: rgba(5, 20, 5, 0.8);
+            color: #e0ffe0;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 100, 0.2);
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #00cc66, #008844);
+            color: #e0ffe0;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 12px 8px;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 100, 0.3);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s;
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, #00dd77, #009955);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(15, 40, 15, 0.7);
+            border: 1px solid #00aa55;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, #00ff88, #00cc66);
+        }
+        
+        h2 {
+            color: #00ff88;
+            border-bottom: 1px solid #00aa55;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2::before {
+            content: "▶";
+            margin-right: 10px;
+            font-size: 0.8em;
+            color: #00cc66;
+        }
+        
+        .characteristics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .characteristics div {
+            padding: 12px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #00cc66;
+            transition: all 0.3s;
+        }
+        
+        .characteristics div:hover {
+            background: rgba(0, 255, 136, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .signal-display {
+            font-size: 18px;
+            text-align: center;
+            padding: 25px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 12px;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #00aa55;
+            position: relative;
+        }
+        
+        .signal-display::before {
+            content: "📡";
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .result {
+            font-size: 20px;
+            text-align: center;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: bold;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .success {
+            background: rgba(0, 255, 100, 0.15);
+            color: #80ffaa;
+            border: 1px solid #00cc66;
+        }
+        
+        .success::before {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 255, 100, 0.2) 10px,
+                rgba(0, 255, 100, 0.2) 20px
+            );
+        }
+        
+        .error {
+            background: rgba(255, 50, 50, 0.15);
+            color: #ff8080;
+            border: 1px solid #ff5555;
+        }
+        
+        .error::before {
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 50, 50, 0.2) 10px,
+                rgba(255, 50, 50, 0.2) 20px
+            );
+        }
+        
+        .welcome {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #00ff88;
+            min-height: 40px;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00aa55;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+        
+        @media (max-width: 650px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            button {
+                padding: 14px 24px;
+                margin: 10px 6px;
+            }
+            
+            .characteristics {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+        
+        .tech-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 255, 136, 0.2);
+            color: #80ffaa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            border: 1px solid #00aa55;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tech-badge">ЭМ-Анализатор Pro v2.1</div>
+        <h1>ЭМ-Анализатор Pro</h1>
+        
+        <div class="input-section">
+            <input type="text" id="userName" placeholder="Введите ваше имя">
+            <div class="button-group">
+                <button onclick="welcomeUser()" class="pulse">Активировать систему</button>
+            </div>
+            <div id="welcomeMessage" class="welcome"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Выбор измерительного устройства</h2>
+            <select id="deviceSelector">
+                <option value="">-- Выберите устройство --</option>
+                <option value="fsl">Спектральный анализатор R&S FSL</option>
+                <option value="rigol">Цифровой осциллограф Rigol DS1054Z</option>
+                <option value="p3-34">Измеритель ЭМП П3-34</option>
+                <option value="narda">Анализатор поля Narda NBM-520</option>
+                <option value="tm">Магнитометр ТМ-196</option>
+            </select>
+            
+            <div class="button-group">
+                <button onclick="showCharacteristics()">Показать технические параметры</button>
+            </div>
+            
+            <div id="characteristics" class="characteristics" style="display: none;">
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Генерация тестового сигнала</h2>
+            <div class="button-group">
+                <button onclick="generateSignal()">Сгенерировать ЭМ-сигнал</button>
+            </div>
+            
+            <div id="signalDisplay" class="signal-display">
+                Нажмите "Сгенерировать ЭМ-сигнал" для создания тестового сигнала
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Анализ совместимости устройства</h2>
+            <div class="button-group">
+                <button onclick="checkDevice()">Проверить совместимость устройства</button>
+            </div>
+            
+            <div id="result" class="result">
+                Результат анализа появится здесь
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const devices = {
+            fsl: {
+                name: "Спектральный анализатор R&S FSL",
+                freqRange: "9 кГц - 6 ГГц",
+                sensitivity: "-165 дБм",
+                minFreq: 0.009,
+                maxFreq: 6000,
+                minPower: -165
+            },
+            rigol: {
+                name: "Цифровой осциллограф Rigol DS1054Z",
+                freqRange: "0 - 50 МГц",
+                sensitivity: "1 мВ/дел",
+                minFreq: 0,
+                maxFreq: 50,
+                minPower: -40
+            },
+            "p3-34": {
+                name: "Измеритель ЭМП П3-34",
+                freqRange: "0.3 МГц - 3 ГГц",
+                sensitivity: "0.5 В/м",
+                minFreq: 0.3,
+                maxFreq: 3000,
+                minPower: -80
+            },
+            narda: {
+                name: "Анализатор поля Narda NBM-520",
+                freqRange: "100 кГц - 60 ГГц",
+                sensitivity: "0.1 В/м",
+                minFreq: 0.1,
+                maxFreq: 60000,
+                minPower: -120
+            },
+            tm: {
+                name: "Магнитометр ТМ-196",
+                freqRange: "5 Гц - 100 кГц",
+                sensitivity: "1 нТл",
+                minFreq: 0.000005,
+                maxFreq: 100,
+                minPower: -90
+            }
+        };
+        
+        let currentSignal = null;
+        let userName = "";
+        
+        function welcomeUser() {
+            userName = document.getElementById("userName").value.trim();
+            if (userName) {
+                document.getElementById("welcomeMessage").textContent = 
+                    `Добро пожаловать, ${userName}! Система ЭМ-анализа активирована.`;
+            } else {
+                document.getElementById("welcomeMessage").textContent = 
+                    "Пожалуйста, введите ваше имя для активации системы.";
+            }
+        }
+        
+        function showCharacteristics() {
+            const selector = document.getElementById("deviceSelector");
+            const deviceId = selector.value;
+            const characteristicsDiv = document.getElementById("characteristics");
+            
+            if (!deviceId) {
+                characteristicsDiv.style.display = "none";
+                alert("Пожалуйста, выберите устройство из списка.");
+                return;
+            }
+            
+            const device = devices[deviceId];
+            
+            characteristicsDiv.innerHTML = `
+                <div><strong>Модель устройства:</strong></div>
+                <div>${device.name}</div>
+                <div><strong>Диапазон частот:</strong></div>
+                <div>${device.freqRange}</div>
+                <div><strong>Чувствительность:</strong></div>
+                <div>${device.sensitivity}</div>
+            `;
+            
+            characteristicsDiv.style.display = "grid";
+        }
+        
+        function generateSignal() {
+            const minLog = Math.log10(0.00001); 
+            const maxLog = Math.log10(100000); 
+            const logRange = maxLog - minLog;
+            const randomLog = minLog + Math.random() * logRange;
+            const frequency = Math.pow(10, randomLog);
+            
+            const power = Math.round(Math.random() * -120);
+            
+            let freqDisplay;
+            if (frequency < 0.001) {
+                freqDisplay = (frequency * 1000000).toFixed(2) + " Гц";
+            } else if (frequency < 1) {
+                freqDisplay = (frequency * 1000).toFixed(2) + " кГц";
+            } else if (frequency < 1000) {
+                freqDisplay = frequency.toFixed(2) + " МГц";
+            } else {
+                freqDisplay = (frequency / 1000).toFixed(2) + " ГГц";
+            }
+            
+            currentSignal = {
+                frequency: frequency,
+                power: power
+            };
+            
+            document.getElementById("signalDisplay").textContent = 
+                `Обнаружен сигнал: ${freqDisplay}, мощность ${power} дБм`;
+        }
+        
+        function checkDevice() {
+            const selector = document.getElementById("deviceSelector");
+            const deviceId = selector.value;
+            const resultDiv = document.getElementById("result");
+            
+            if (!deviceId) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = "Сначала выберите устройство из списка.";
+                return;
+            }
+            
+            if (!currentSignal) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = "Сначала сгенерируйте тестовый сигнал.";
+                return;
+            }
+            
+            const device = devices[deviceId];
+            let message = "";
+            let isSuitable = true;
+            
+            if (currentSignal.frequency < device.minFreq) {
+                message += `Частота сигнала ниже минимальной для устройства. `;
+                isSuitable = false;
+            } else if (currentSignal.frequency > device.maxFreq) {
+                message += `Частота сигнала выше максимальной для устройства. `;
+                isSuitable = false;
+            }
+            
+            if (currentSignal.power < device.minPower) {
+                message += `Мощность сигнала ниже чувствительности устройства.`;
+                isSuitable = false;
+            }
+            
+            if (isSuitable) {
+                resultDiv.className = "result success";
+                resultDiv.textContent = "Совместимо! Устройство может измерять данный сигнал.";
+            } else {
+                resultDiv.className = "result error";
+                resultDiv.textContent = "Несовместимо — " + message;
+            }
+        }
+    </script>
+</body>
+</html>
